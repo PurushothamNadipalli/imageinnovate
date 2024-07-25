@@ -16,7 +16,7 @@ import com.imaginnovate.imaginnovateAppilication.model.EmployeeTds;
 
 
 @RestController
-@RequestMapping("/v1") 
+@RequestMapping("/v1")
 public interface EmployeeController {
 	
 	@PostMapping("/api/employee")

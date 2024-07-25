@@ -4,14 +4,17 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.datetime.DateFormatter;
 import org.springframework.stereotype.Service;
 import com.imaginnovate.imaginnovateAppilication.exception.EmployeeServiceException;
+import com.imaginnovate.imaginnovateAppilication.exception.IdNotFoundException;
 import com.imaginnovate.imaginnovateAppilication.model.Employee;
 import com.imaginnovate.imaginnovateAppilication.model.EmployeeTds;
 import com.imaginnovate.imaginnovateAppilication.repository.EmployeeRepository;
@@ -41,7 +44,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		Optional<Employee> employee = employeeRepository.findById(employeeId);
 		EmployeeTds employeeTds = new EmployeeTds();
 		if(!employee.isPresent()) {
-			throw new EmployeeServiceException("Employee Object Not found for the id" + employeeId);
+			throw new IdNotFoundException("Employee Object Not found for the id" + employeeId);
 		}
 		calculate(employee.get(),employeeTds);
 		return employeeTds;
@@ -75,29 +78,29 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeTds.setEmployeeId(employee.getEmployeeId());
         employeeTds.setFirstName(employee.getFirstName());
         employeeTds.setLastName(employee.getLastName());
-        employeeTds.setYearlySalary(totalSalary);
-        employeeTds.setTaxAmount(tax);
-        employeeTds.setCessAmount(cess);
+        employeeTds.setYearlySalary(Math.round(totalSalary));
+        employeeTds.setTaxAmount(Math.round(tax));
+        employeeTds.setCessAmount(Math.round(cess));
     }
 	
-	public double caluculateYearlySalary(double salary,Date doj) throws ParseException {
-		   SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-mm-dd");
-	        Date date1 = simpleDateFormat.parse("2024-04-01");
-	        if(doj.before(date1)) {
-	        	return 12 * salary;
-	        }else {
-	        	long monthsBetween = ChronoUnit.MONTHS.between(
-	        	        LocalDate.parse(SalaryCaluculationUtils.getStringDate(doj)).withDayOfMonth(1),
-	        	        LocalDate.parse("2025-03-31").withDayOfMonth(1));
-	        	System.out.println(monthsBetween);
-	        	int joinDate =doj.getDate();
-	        	int salariedDays = 30- joinDate;
-	        	
-	        	return salary * monthsBetween + (salary/30*salariedDays);
-			}
+	public static double caluculateYearlySalary(double salary, Date doj) throws ParseException {
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Date date1 = simpleDateFormat.parse("2024-03-31");
+		if (doj.after(date1)) {
+			long monthsBetween = SalaryCaluculationUtils.monthsBetween(doj, simpleDateFormat.parse("2025-03-31"));
+			System.out.println(monthsBetween);
+			int joinDate = doj.getDate();
+			int salariedDays = 31 - joinDate;
+			System.out.println(salary * monthsBetween + (salary / 30 * salariedDays));
+			return salary * monthsBetween + ((salary / 30) * salariedDays);
+
+		} else {
+			return 12 * salary;
+		}
 	}
-	
+		
+}
 	
 	
 
-}
+
