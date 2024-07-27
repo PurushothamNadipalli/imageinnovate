@@ -52,6 +52,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 	
 	public void calculate(Employee employee,EmployeeTds employeeTds ) throws ParseException {
+		double monthlySalary = employee.getSalary();
+		double slaryCTC = 12* employee.getSalary();
         double totalSalary = caluculateYearlySalary(employee.getSalary(),employee.getDoj());
         double tax = 0;
         double cess = 0;
@@ -78,7 +80,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeTds.setEmployeeId(employee.getEmployeeId());
         employeeTds.setFirstName(employee.getFirstName());
         employeeTds.setLastName(employee.getLastName());
-        employeeTds.setYearlySalary(Math.round(totalSalary));
+        employeeTds.setEarnedSalary(Math.round(totalSalary));
+        employeeTds.setMonthlySalary(monthlySalary);
+        employeeTds.setSalaryCTC(slaryCTC);
         employeeTds.setTaxAmount(Math.round(tax));
         employeeTds.setCessAmount(Math.round(cess));
     }

@@ -9,9 +9,10 @@ public class EmployeeTds {
 	 private Long employeeId;
 	 private String firstName;
 	 private String lastName;
-	 private double yearlySalary; 
+	 private double monthlySalary; 
 	 private double taxAmount;
 	 private double cessAmount;
-		 
+	 private double earnedSalary;
+	 private double salaryCTC;
 	 
 }
